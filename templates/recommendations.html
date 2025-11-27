@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Empfehlungen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <nav>
+      <a href="/">Startseite</a>
+      <a href="/add_author">Autor hinzufügen</a>
+      <a href="/add_book">Buch hinzufügen</a>
+      <a href="/recommendations">Empfehlungen</a>
+    </nav>
+    <h1>Buchempfehlungen</h1>
+    <p>Sortiert nach Bewertung (höchste zuerst), dann nach Titel.</p>
+    <div class="books">
+      {% for book in books %}
+        <div class="book">
+          <div>
+            <div><strong><a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a></strong></div>
+            <div>Autor: {{ book.author.name if book.author else 'Unbekannt' }}</div>
+            <div>Bewertung: {{ book.rating if book.rating is not none else 'Keine' }}</div>
+          </div>
+        </div>
+      {% else %}
+        <p>Keine Bücher vorhanden.</p>
+      {% endfor %}
+    </div>
+  </body>
+  </html>

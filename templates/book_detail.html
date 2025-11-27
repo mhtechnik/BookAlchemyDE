@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ book.title }} - Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <nav>
+      <a href="/">Startseite</a>
+      <a href="/add_author">Autor hinzufügen</a>
+      <a href="/add_book">Buch hinzufügen</a>
+    </nav>
+
+    <h1>{{ book.title }}</h1>
+    <div class="wrap">
+      <div>
+        <p><strong>Autor:</strong>
+          {% if book.author %}
+            <a href="{{ url_for('author_detail', author_id=book.author.id) }}">{{ book.author.name }}</a>
+          {% else %}
+            Unbekannt
+          {% endif %}
+        </p>
+        <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+        {% if book.publication_year %}<p><strong>Erscheinungsjahr:</strong> {{ book.publication_year }}</p>{% endif %}
+        <p><strong>Bewertung:</strong> {{ book.rating if book.rating is not none else 'Keine' }}</p>
+
+        <form method="post" action="{{ url_for('rate_book', book_id=book.id) }}" class="mb-1">
+          <label>Bewerten (1-10):
+            <input type="number" name="rating" min="1" max="10" class="rating-input" />
+          </label>
+          <button type="submit">Speichern</button>
+        </form>
+
+        <form method="post" action="{{ url_for('delete_book', book_id=book.id) }}" onsubmit="return confirm('Buch wirklich löschen?');">
+          <button type="submit">Buch löschen</button>
+        </form>
+      </div>
+    </div>
+  </body>
+  </html>

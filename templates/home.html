@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bibliothek</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <div>
+          {% for category, msg in msgs %}
+            <div class="msg {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <header>
+      <nav>
+        <a href="/">Startseite</a>
+        <a href="/add_author">Autor hinzufügen</a>
+        <a href="/add_book">Buch hinzufügen</a>
+        <a href="/recommendations">Empfehlungen</a>
+      </nav>
+      <form class="sort" method="get" action="/">
+        <label for="sort">Sortieren nach</label>
+        <select id="sort" name="sort">
+          <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Titel</option>
+          <option value="author" {% if current_sort == 'author' %}selected{% endif %}>Autor</option>
+        </select>
+        <input type="text" name="q" value="{{ q or '' }}" placeholder="Suche Titel, Autor oder ISBN" />
+        <button type="submit">Suchen</button>
+      </form>
+    </header>
+
+    <h1>Bibliothek</h1>
+
+    {% if q %}
+      {% if no_results %}
+        <p>Keine Bücher entsprechen den Suchkriterien.</p>
+      {% else %}
+        <p>Ergebnisse für "{{ q }}": {{ books|length }}</p>
+      {% endif %}
+    {% endif %}
+
+    <div class="books">
+      {% for book in books %}
+        <div class="book">
+          <div class="meta">
+            <div><strong><a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a></strong></div>
+            <div>
+              Autor:
+              {% if book.author %}
+                <a href="{{ url_for('author_detail', author_id=book.author.id) }}">{{ book.author.name }}</a>
+                <form class="inline" method="post" action="{{ url_for('delete_author', author_id=book.author.id) }}" onsubmit="return confirm('Autor und alle seine Bücher löschen?');">
+                  <button type="submit">Autor löschen</button>
+                </form>
+              {% else %}
+                Unbekannt
+              {% endif %}
+            </div>
+            <div>
+              Bewertung:
+              {% if book.rating %}
+                {{ book.rating }}/10
+              {% else %}
+                Keine
+              {% endif %}
+              <form class="inline" method="post" action="{{ url_for('rate_book', book_id=book.id) }}">
+                <input type="number" name="rating" min="1" max="10" class="rating-input" />
+                <button type="submit">Bewerten</button>
+              </form>
+            </div>
+            {% if book.publication_year %}<div>Erscheinungsjahr: {{ book.publication_year }}</div>{% endif %}
+            <div>ISBN: {{ book.isbn }}</div>
+            <form method="post" action="{{ url_for('delete_book', book_id=book.id) }}" onsubmit="return confirm('Buch wirklich löschen?');">
+              <button type="submit">Buch löschen</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <p>Keine Bücher vorhanden. <a href="/add_book">Jetzt hinzufügen</a>.</p>
+      {% endfor %}
+    </div>
+  </body>
+  </html>

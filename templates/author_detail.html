@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ author.name }} – Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <nav>
+      <a href="/">Startseite</a>
+      <a href="/add_author">Autor hinzufügen</a>
+      <a href="/add_book">Buch hinzufügen</a>
+    </nav>
+
+    <h1>{{ author.name }}</h1>
+    <p>
+      {% if author.birth_date %}
+        Geboren: {{ author.birth_date }}
+      {% endif %}
+      {% if author.date_of_death %}
+        – Gestorben: {{ author.date_of_death }}
+      {% endif %}
+    </p>
+
+    <h2>Bücher</h2>
+    {% if books %}
+      <ul>
+        {% for b in books %}
+          <li><a href="{{ url_for('book_detail', book_id=b.id) }}">{{ b.title }}</a> – {{ b.isbn }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Keine Bücher für diesen Autor gefunden.</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('delete_author', author_id=author.id) }}" onsubmit="return confirm('Autor und alle seine Bücher löschen?');">
+      <button type="submit">Autor löschen</button>
+    </form>
+  </body>
+  </html>

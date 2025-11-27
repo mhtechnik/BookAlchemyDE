@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Autor hinzufügen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <nav>
+      <a href="/">Startseite</a>
+      <a href="/add_author">Autor hinzufügen</a>
+      <a href="/add_book">Buch hinzufügen</a>
+    </nav>
+
+    <h1>Autor hinzufügen</h1>
+
+    {% if message %}
+      <div class="msg {{ status or '' }}">{{ message }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('add_author') }}">
+      <label>
+        Name
+        <input type="text" name="name" placeholder="Vor- und Nachname" required autocomplete="off" value="{{ request.form.get('name', '') }}" />
+      </label>
+      <label>
+        Geburtsdatum
+        <input type="date" name="birth_date" value="{{ request.form.get('birth_date', '') }}" />
+      </label>
+      <label>
+        Sterbedatum (optional)
+        <input type="date" name="date_of_death" value="{{ request.form.get('date_of_death', '') }}" />
+      </label>
+      <button type="submit">Speichern</button>
+    </form>
+
+    <h2>Autoren</h2>
+    {% if authors %}
+      <ul>
+        {% for a in authors %}
+          <li>
+            {{ a.name }}
+            {% if a.birth_date %} (geb. {{ a.birth_date }}{% if a.date_of_death %} – gest. {{ a.date_of_death }}{% endif %}){% endif %}
+            <form class="inline" method="post" action="{{ url_for('delete_author', author_id=a.id) }}" onsubmit="return confirm('Autor und alle seine Bücher löschen?');">
+              <button type="submit">Autor löschen</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Keine Autoren vorhanden.</p>
+    {% endif %}
+  </body>
+  </html>
